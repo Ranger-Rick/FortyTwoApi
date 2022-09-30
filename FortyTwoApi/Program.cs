@@ -17,6 +17,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddTransient<IMediaApi, TheMovieDatabaseMovieService>();
+        builder.Services.AddTransient<IMediaApi, TheMovieDatabaseTvService>();
 
         var app = builder.Build();
 

@@ -7,23 +7,19 @@ using Refit;
 
 namespace FortyTwoApi.Services;
 
-public class TheMovieDatabaseMovieService : IMediaApi
+public class TheMovieDatabaseMovieService : TheMovieDatabaseBaseService, IMediaApi
 {
     public MediaType Type => MediaType.Movie;
-
-    private readonly IConfiguration _configuration;
-    private readonly ITheMovieDatabaseApi _theMovieDatabase;
     
-    public TheMovieDatabaseMovieService(IConfiguration configuration)
+    public TheMovieDatabaseMovieService(IConfiguration configuration) : base(configuration)
     {
-        _configuration = configuration;
-        _theMovieDatabase = RestService.For<ITheMovieDatabaseApi>(_configuration["Urls:TheMovieDatabaseBaseUrl"]);
     }
+    
     public async Task<List<IOption>> GetOptions(string search)
     {
         try
         {
-            var response = await _theMovieDatabase.SearchMovies(_configuration["Configuration:TheMovieDatabaseAuth"], search);
+            var response = await TheMovieDatabaseApi.SearchMovies(TheMovieDatabaseAuthentication, search);
 
             var output = new List<IOption>();
 
@@ -33,7 +29,7 @@ public class TheMovieDatabaseMovieService : IMediaApi
                 var newOption = new GenericOption
                 {
                     Identifier = option.Id,
-                    PrimaryName = option.OriginalTitle,
+                    PrimaryName = option.Title,
                     Description = option.Overview,
                     ReleasedOn = releasedOnSuccess ? releasedOn : DateTime.Now
                 };
@@ -55,9 +51,9 @@ public class TheMovieDatabaseMovieService : IMediaApi
 
         if (!idParseSuccess) return new Movie();
         
-        var movieDetails = await _theMovieDatabase.GetMovieDetails(_configuration["Configuration:TheMovieDatabaseAuth"], id);
+        var movieDetails = await TheMovieDatabaseApi.GetMovieDetails(TheMovieDatabaseAuthentication, id);
 
-        var movieCredits = await _theMovieDatabase.GetMovieCredits(_configuration["Configuration:TheMovieDatabaseAuth"], id);
+        var movieCredits = await TheMovieDatabaseApi.GetMovieCredits(TheMovieDatabaseAuthentication, id);
         
         var releasedOnSuccess = DateTime.TryParse(movieDetails.ReleaseDate, out var releasedOn);
         

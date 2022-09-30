@@ -17,4 +17,11 @@ public interface ITheMovieDatabaseApi : IRefitApi
 
     [Get("/3/movie/{id}/credits")]
     Task<TheMovieDatabaseMovieCreditsDto> GetMovieCredits([Header("Authorization")] string authorization, int id);
+    
+    [Get("/3/search/tv")]
+    Task<TheMovieDatabaseTvSearchDto> SearchTelevision([Header("Authorization")] string authorization, string query);
+
+    [Get("/3/tv/{id}")]
+    Task<TheMovieDatabaseTvDetailsDto> GetTelevisionDetails([Header("Authorization")] string authorization, int id);
+
 }
